@@ -14,6 +14,6 @@ if __name__ == '__main__':
     #
     # win.draw_move(cell1, cell2)
 
-    Maze(10, 10, 17, 20, 40, 40, win)
+    Maze(10, 10, 15, 15, 40, 40, win)
 
     win.wait_for_close()
