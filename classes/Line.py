@@ -9,4 +9,3 @@ class Line:
 
     def draw(self, canvas: Canvas, fill_colour):
         canvas.create_line(self.point_a.x, self.point_a.y, self.point_b.x, self.point_b.y, fill=fill_colour, width=2)
-        canvas.pack()
