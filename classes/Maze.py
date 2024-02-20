@@ -1,6 +1,5 @@
 import random
 import time
-from tkinter import Canvas
 
 from classes.Cell import Cell
 from classes.Window import Window
@@ -141,8 +140,6 @@ class Maze:
     def _draw_navigate(self, from_cell, to_cell):
         from_cell.draw_move(to_cell)
         self._animate()
-
-
 
     def _solve_r(self, i, j):
         self._animate()

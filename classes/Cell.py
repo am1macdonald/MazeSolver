@@ -1,5 +1,3 @@
-from tkinter import Canvas
-
 from classes.Line import Line
 from classes.Point import Point
 from classes.Window import Window

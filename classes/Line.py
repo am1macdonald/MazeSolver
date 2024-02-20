@@ -1,4 +1,5 @@
 from tkinter import Canvas
+
 from classes.Point import Point
 
 
