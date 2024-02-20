@@ -30,6 +30,7 @@ class Maze:
             random.seed(seed)
         self._create_cells()
         self._break_walls_r(0, 0)
+        self._unvisit_cells()
 
     def _create_cells(self):
         self._cells = []
@@ -65,32 +66,43 @@ class Maze:
         br.has_right_wall = False
         self._draw_cell(self.num_cols - 1, self.num_rows - 1)
 
+    def _get_cell_neighbours(self, i, j):
+        neighbors = []
+        if j > 0:
+            neighbors.append(
+                (i, j - 1),
+            )
+        else:
+            neighbors.append(None)
+        if i < self.num_cols - 1:
+            neighbors.append(
+                (i + 1, j),
+            )
+        else:
+            neighbors.append(None)
+        if j < self.num_rows - 1:
+            neighbors.append(
+                (i, j + 1),
+            )
+        else:
+            neighbors.append(None)
+        if i > 0:
+            neighbors.append(
+                (i - 1, j),
+            )
+        else:
+            neighbors.append(None)
+        return neighbors
+
     def _break_walls_r(self, i, j):
         current = self._cells[i][j]
         current.visited = True
         while True:
             to_visit = []
-            neighbors: [(int, int)] = []
-            if i < self.num_cols - 1:
-                neighbors.append(
-                    (i + 1, j),
-                )
-            if i - 1 > 0:
-                neighbors.append(
-                    (i - 1, j),
-                )
-            if j < self.num_rows - 1:
-                neighbors.append(
-                    (i, j + 1),
-                )
-            if j - 1 > 0:
-                neighbors.append(
-                    (i, j - 1),
-                )
+            neighbors: [(int, int)] = self._get_cell_neighbours(i, j)
             for cell in neighbors:
-                if not self._cells[cell[0]][cell[1]].visited:
+                if cell and not self._cells[cell[0]][cell[1]].visited:
                     to_visit.append(cell)
-
             if len(to_visit) == 0:
                 current.draw()
                 return
@@ -113,7 +125,65 @@ class Maze:
             self._animate()
             self._break_walls_r(choice_coords[0], choice_coords[1])
 
+    def _unvisit_cells(self):
+        for row in self._cells:
+            for cell in row:
+                cell.visited = False
+
     def _animate(self):
         if self._win:
-            time.sleep(0.005)
+            time.sleep(0.01)
             self._win.redraw()
+
+    def solve(self):
+        return self._solve_r(0, 0)
+
+    def _draw_navigate(self, from_cell, to_cell):
+        from_cell.draw_move(to_cell)
+        self._animate()
+
+
+
+    def _solve_r(self, i, j):
+        self._animate()
+        cells = self._cells
+        current = cells[i][j]
+        current.visited = True
+        if i == self.num_cols - 1 and j == self.num_rows - 1:
+            return True
+        nbs = self._get_cell_neighbours(i, j)
+        for n in range(0, 4):
+            found = False
+            if not nbs[n]:
+                continue
+            else:
+                dest = cells[nbs[n][0]][nbs[n][1]]
+            if dest.visited:
+                continue
+            match n:
+                case 0:
+                    if not current.has_top_wall:
+                        self._draw_navigate(current, dest)
+                        found = self._solve_r(nbs[n][0], nbs[n][1])
+                        if not found:
+                            current.draw_move(dest, True)
+                case 1:
+                    if not current.has_right_wall:
+                        self._draw_navigate(current, dest)
+                        found = self._solve_r(nbs[n][0], nbs[n][1])
+                        if not found:
+                            current.draw_move(dest, True)
+                case 2:
+                    if not current.has_bottom_wall:
+                        self._draw_navigate(current, dest)
+                        found = self._solve_r(nbs[n][0], nbs[n][1])
+                        if not found:
+                            current.draw_move(dest, True)
+                case 3:
+                    if not current.has_left_wall:
+                        self._draw_navigate(current, dest)
+                        found = self._solve_r(nbs[n][0], nbs[n][1])
+                        if not found:
+                            current.draw_move(dest, True)
+            if found:
+                return True

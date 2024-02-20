@@ -25,6 +25,8 @@ class Cell:
         self.visited = False
 
     def draw(self, ):
+        if not self._win:
+            return
         points = [Point(self._x1, self._y1), Point(self._x2, self._y1), Point(self._x2, self._y2),
                   Point(self._x1, self._y2)]
 
